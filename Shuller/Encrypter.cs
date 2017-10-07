@@ -23,7 +23,7 @@ namespace Shuller
 			public List<char> Arguments { get; set; }
 		}
 
-		private static Dictionary<String, Command> validCommands = new Dictionary<string, Command>()
+		private static readonly Dictionary<String, Command> ValidCommands = new Dictionary<string, Command>()
 		{
 			{
 				"encrypt", new Command()
@@ -56,7 +56,7 @@ namespace Shuller
 			}
 		};
 
-		private static Dictionary<char, Argument> valArguments = new Dictionary<char, Argument>()
+		private static readonly Dictionary<char, Argument> ValidArguments = new Dictionary<char, Argument>()
 		{
 			{
 				'r', new Argument()
@@ -84,7 +84,7 @@ namespace Shuller
 			{
 				foreach (var argument in arguments)
 				{
-					if (!validCommands.ContainsKey(argument))
+					if (!ValidCommands.ContainsKey(argument))
 					{
 						Console.WriteLine($"The command '{argument}' doesn't exist. Type 'help' for avaiable commands");
 						return;
@@ -93,18 +93,18 @@ namespace Shuller
 
 				foreach (var argument in arguments)
 				{
-					string commandName = validCommands[argument].Name;
-					string commandInfo = validCommands[argument].Information;
-					string commandMoreInfo = validCommands[argument].MoreInformation;
+					string commandName = ValidCommands[argument].Name;
+					string commandInfo = ValidCommands[argument].Information;
+					string commandMoreInfo = ValidCommands[argument].MoreInformation;
 					Console.WriteLine($"{commandName}: {commandInfo}\n{commandMoreInfo}");
 				}
 			}
 			else
 			{
-				foreach (var command in validCommands.Keys)
+				foreach (var command in ValidCommands.Keys)
 				{
-					string commandName = validCommands[command].Name;
-					string commandInfo = validCommands[command].Information;
+					string commandName = ValidCommands[command].Name;
+					string commandInfo = ValidCommands[command].Information;
 					Console.WriteLine($"{commandName}: {commandInfo}");
 				}
 			}
@@ -127,7 +127,7 @@ namespace Shuller
 
 				// Example: encrypt {filePath} {encryptedFilePath} 
 				// Reads from filePath and writes encrypted output to encryptedFilePath.
-				if (arguments.Length > 0)
+				if (arguments.Length > 1)
 				{
 					string filePath = arguments[0];
 					string encrypredFilePath = arguments[1];
@@ -143,7 +143,7 @@ namespace Shuller
 				// Simply prints encrypted input to console.
 				else
 				{
-					Console.WriteLine("Text to decrypt: ");
+					Console.WriteLine("Text to encrypt: ");
 					string text = Console.ReadLine();
 
 					byte[] encrypted = Crypher.EncryptStringToBytes(text, myRijndael.Key, myRijndael.IV);
