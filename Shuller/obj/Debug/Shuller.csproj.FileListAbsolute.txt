@@ -1,0 +1,6 @@
+D:\Programming\Git-repositories\Shuller\Shuller\bin\Debug\Shuller.exe.config
+D:\Programming\Git-repositories\Shuller\Shuller\bin\Debug\Shuller.exe
+D:\Programming\Git-repositories\Shuller\Shuller\bin\Debug\Shuller.pdb
+D:\Programming\Git-repositories\Shuller\Shuller\obj\Debug\Shuller.csprojResolveAssemblyReference.cache
+D:\Programming\Git-repositories\Shuller\Shuller\obj\Debug\Shuller.exe
+D:\Programming\Git-repositories\Shuller\Shuller\obj\Debug\Shuller.pdb
