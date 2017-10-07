@@ -112,116 +112,80 @@ namespace Shuller
 
 		private static void Encrypt(string[] arguments)
 		{
-			if (arguments.Length > 0)
+
+			/*
+			 * Create a new instance of the RijndaelManaged 
+			 * class.  This generates a new key and initialization  
+			 * vector (IV). 
+			 */
+			using (RijndaelManaged myRijndael = new RijndaelManaged())
 			{
-				string filePath = arguments[0];
-				string encrypredFilePath = arguments[1];
+				myRijndael.GenerateKey();
+				myRijndael.GenerateIV();
 
-				string text = File.ReadAllText(filePath);
+				byte[] key = myRijndael.Key;
 
-				// Create a new instance of the RijndaelManaged 
-				// class.  This generates a new key and initialization  
-				// vector (IV). 
-				using (RijndaelManaged myRijndael = new RijndaelManaged())
+				// Example: encrypt {filePath} {encryptedFilePath} 
+				// Reads from filePath and writes encrypted output to encryptedFilePath.
+				if (arguments.Length > 0)
 				{
-					myRijndael.GenerateKey();
-					myRijndael.GenerateIV();
-
-					byte[] key = myRijndael.Key;
+					string filePath = arguments[0];
+					string encrypredFilePath = arguments[1];
+					string text = File.ReadAllText(filePath);
 
 					// Encrypt the string to an array of bytes. 
 					byte[] encrypted = Crypher.EncryptStringToBytes(text, myRijndael.Key, myRijndael.IV);
 
-					File.WriteAllBytes("key.txt", key);
+					// Create file with the encrypted output.
 					File.WriteAllBytes(encrypredFilePath, encrypted);
-					Console.WriteLine("Encryption finished. Your key is in 'key.txt'.");
 				}
-
-			}
-			else
-			{
-				Console.WriteLine("String:");
-				string str = Console.ReadLine();
-				using (RijndaelManaged myRijndael = new RijndaelManaged())
+				// Example: encrypt
+				// Simply prints encrypted input to console.
+				else
 				{
-					myRijndael.GenerateKey();
-					myRijndael.GenerateIV();
-					byte[] encrypted = Crypher.EncryptStringToBytes(str, myRijndael.Key, myRijndael.IV);
-					byte[] key = myRijndael.Key;
+					Console.WriteLine("Text to decrypt: ");
+					string text = Console.ReadLine();
 
-					File.WriteAllBytes("key.txt", key);
-					Console.WriteLine(string.Join(" ", encrypted.Select(b => b.ToString()).ToArray()) +
-						"Encryption finished. Your key is in 'key.txt'");
+					byte[] encrypted = Crypher.EncryptStringToBytes(text, myRijndael.Key, myRijndael.IV);
+
+					Console.WriteLine(string.Join("", encrypted.Select(b => b.ToString()).ToArray()));
 				}
+
+				// Copy key in separate text file.
+				File.WriteAllBytes("key.txt", key);
+				Console.WriteLine("Encryption finished. Your key is in 'key.txt'.");
 			}
 		}
 
 		private static void Decrypt(string[] arguments)
 		{
-			if (arguments.Length > 1)
+			using (RijndaelManaged myRijndael = new RijndaelManaged())
 			{
 				Console.WriteLine("Key path:");
 				byte[] key = File.ReadAllBytes(Console.ReadLine());
 
+				// Use key from key path
+				myRijndael.Key = key;
+				myRijndael.GenerateIV();
+
 				string filePath = arguments[0];
-				string decryptedFilePath = arguments[1];
 
-				using (RijndaelManaged myRijndael = new RijndaelManaged())
+				// Get the decrypted byte array from filePath
+				byte[] encrypted = File.ReadAllBytes(filePath);
+
+				// Decrypt the bytes to a string. 
+				string decrypted = Crypher.DecryptStringFromBytes(encrypted, myRijndael.Key, myRijndael.IV);
+
+				if (arguments.Length > 1)
 				{
-					myRijndael.Key = key;
-					myRijndael.GenerateIV();
-
-					byte[] encrypted = File.ReadAllBytes(filePath);
-
-					// Decrypt the bytes to a string. 
-					string decrypted = Crypher.DecryptStringFromBytes(encrypted, myRijndael.Key, myRijndael.IV);
-
+					string decryptedFilePath = arguments[1];
 					if (!File.Exists(decryptedFilePath))
 						File.Create(decryptedFilePath);
 
 					File.WriteAllText(decryptedFilePath, string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
 				}
-			}
-			else if (arguments.Length > 0)
-			{
-				Console.WriteLine("Key path:");
-				byte[] key = File.ReadAllBytes(Console.ReadLine());
-
-				string filePath = arguments[0];
-
-				using (RijndaelManaged myRijndael = new RijndaelManaged())
+				else
 				{
-					myRijndael.Key = key;
-					myRijndael.GenerateIV();
-
-					byte[] encrypted = File.ReadAllBytes(filePath);
-
-					// Decrypt the bytes to a string. 
-					string decrypted = Crypher.DecryptStringFromBytes(encrypted, myRijndael.Key, myRijndael.IV);
-
-					Console.WriteLine(string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
-				}
-			}
-			else
-			{
-				Console.WriteLine("String: ");
-				string str = Console.ReadLine();
-
-				Console.WriteLine("Key path:");
-				byte[] key = File.ReadAllBytes(Console.ReadLine());
-
-				string filePath = arguments[0];
-
-				using (RijndaelManaged myRijndael = new RijndaelManaged())
-				{
-					myRijndael.Key = key;
-					myRijndael.GenerateIV();
-
-					byte[] encrypted = File.ReadAllBytes(filePath);
-
-					// Decrypt the bytes to a string. 
-					string decrypted = Crypher.DecryptStringFromBytes(encrypted, myRijndael.Key, myRijndael.IV);
-
 					Console.WriteLine(string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
 				}
 			}

@@ -6,31 +6,6 @@ namespace Shuller
 {
 	public class Crypher
 	{
-		public static void testCrypher()
-		{
-			string original = "Here is some data to encrypt!";
-
-			// Create a new instance of the RijndaelManaged 
-			// class.  This generates a new key and initialization  
-			// vector (IV). 
-			using (RijndaelManaged myRijndael = new RijndaelManaged())
-			{
-
-				myRijndael.GenerateKey();
-				myRijndael.GenerateIV();
-
-				// Encrypt the string to an array of bytes. 
-				byte[] encrypted = EncryptStringToBytes(original, myRijndael.Key, myRijndael.IV);
-
-				// Decrypt the bytes to a string. 
-				string roundtrip = DecryptStringFromBytes(encrypted, myRijndael.Key, myRijndael.IV);
-
-				//Display the original data and the decrypted data.
-				Console.WriteLine("Original:   {0}", original);
-				Console.WriteLine("Round Trip: {0}", roundtrip);
-			}
-		}
-
 		public static byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
 		{
 			// Check arguments. 
