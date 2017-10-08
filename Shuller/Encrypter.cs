@@ -168,7 +168,7 @@ namespace Shuller
 				Console.WriteLine("IV path ('Enter' for none):");
 				byte[] IV = File.ReadAllBytes(Console.ReadLine());
 
-				Console.WriteLine();
+				Console.WriteLine("\nDecryption finished.");
 
 				// Use key from key path
 				myRijndael.Key = key;
@@ -188,14 +188,12 @@ namespace Shuller
 				if (arguments.Length > 1)
 				{
 					string decryptedFilePath = arguments[1];
-					if (!File.Exists(decryptedFilePath))
-						File.Create(decryptedFilePath);
-
+					Console.WriteLine($"Decrypted text is in: '{decryptedFilePath}'");
 					File.WriteAllText(decryptedFilePath, string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
 				}
 				else
 				{
-					Console.WriteLine(string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
+					Console.WriteLine("Decrypted text is:\n\n" + string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
 				}
 			}
 		}
