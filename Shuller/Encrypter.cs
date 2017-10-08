@@ -124,6 +124,7 @@ namespace Shuller
 				myRijndael.GenerateIV();
 
 				byte[] key = myRijndael.Key;
+				byte[] IV = myRijndael.IV;
 
 				// Example: encrypt {filePath} {encryptedFilePath} 
 				// Reads from filePath and writes encrypted output to encryptedFilePath.
@@ -148,12 +149,13 @@ namespace Shuller
 
 					byte[] encrypted = Crypher.EncryptStringToBytes(text, myRijndael.Key, myRijndael.IV);
 
-					Console.WriteLine(string.Join("", encrypted.Select(b => b.ToString()).ToArray()));
+					Console.WriteLine(Convert.ToBase64String(encrypted));
 				}
 
-				// Copy key in separate text file.
+				// Send key to separate text file.
 				File.WriteAllBytes("key.txt", key);
-				Console.WriteLine("Encryption finished. Your key is in 'key.txt'.");
+				File.WriteAllBytes("key.txt", key);
+				Console.WriteLine("Encryption finished.\nYour key is in 'key.txt'.\nYour IV is in 'IV.txt'.");
 			}
 		}
 
@@ -163,10 +165,11 @@ namespace Shuller
 			{
 				Console.WriteLine("Key path:");
 				byte[] key = File.ReadAllBytes(Console.ReadLine());
+				byte[] IV = File.ReadAllBytes(Console.ReadLine());
 
 				// Use key from key path
 				myRijndael.Key = key;
-				myRijndael.GenerateIV();
+				myRijndael.IV = IV;
 
 				string filePath = arguments[0];
 
