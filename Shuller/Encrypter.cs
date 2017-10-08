@@ -154,7 +154,7 @@ namespace Shuller
 
 				// Send key to separate text file.
 				File.WriteAllBytes("key.txt", key);
-				File.WriteAllBytes("key.txt", key);
+				File.WriteAllBytes("IV.txt", IV);
 				Console.WriteLine("Encryption finished.\nYour key is in 'key.txt'.\nYour IV is in 'IV.txt'.");
 			}
 		}
