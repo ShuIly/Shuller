@@ -165,11 +165,17 @@ namespace Shuller
 			{
 				Console.WriteLine("Key path:");
 				byte[] key = File.ReadAllBytes(Console.ReadLine());
+				Console.WriteLine("IV path ('Enter' for none):");
 				byte[] IV = File.ReadAllBytes(Console.ReadLine());
+
+				Console.WriteLine();
 
 				// Use key from key path
 				myRijndael.Key = key;
-				myRijndael.IV = IV;
+				if (IV.Length > 0)
+					myRijndael.IV = IV;
+				else
+					myRijndael.GenerateIV();
 
 				string filePath = arguments[0];
 
