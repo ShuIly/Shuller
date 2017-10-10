@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Shuller
 {
@@ -36,6 +35,7 @@ namespace Shuller
 						"\tNote: if no new file name is given the encrypted text will only be viewed as output.\n",
 					Arguments = new List<char>()
 					{
+						'k'
 					}
 				}
 			},
@@ -59,10 +59,10 @@ namespace Shuller
 		private static readonly Dictionary<char, Argument> ValidArguments = new Dictionary<char, Argument>()
 		{
 			{
-				'r', new Argument()
+				'k', new Argument()
 				{
-					Name = 'r',
-					Information = "only output as text."
+					Name = 'k',
+					Information = "add key for encryption."
 				}
 			},
 		};
@@ -110,8 +110,36 @@ namespace Shuller
 			}
 		}
 
+		private static HashSet<char> CheckArguments(string command, string[] arguments)
+		{
+			HashSet<char> validArguments = new HashSet<char>();
+			for (int i = 0; i < arguments.Length; i++)
+			{
+				if (arguments[i][0] != '-')
+				{
+					Console.WriteLine($"Invalid argument '{arguments[i]}'. To list avaiable arguments type 'help [command]'.");
+					return new HashSet<char>();
+				}
+
+				for (int j = 0; j < arguments[i].Length; j++)
+				{
+					char argument = arguments[i][j];
+					if (!ValidCommands[command].Arguments.Contains(argument))
+					{
+						Console.WriteLine($"Command '{command}' doesn't have argument {argument}. To list avaiable arguments type 'help [command]'.");
+						return new HashSet<char>();
+					}
+					validArguments.Add(argument);
+				}
+			}
+
+			return validArguments;
+		}
+
 		private static void Encrypt(string[] arguments)
 		{
+
+			HashSet<char> encryptArguments = CheckArguments("encrypt", arguments.Take(arguments.Length - 1).ToArray());
 
 			/*
 			 * Create a new instance of the RijndaelManaged 
@@ -120,11 +148,32 @@ namespace Shuller
 			 */
 			using (RijndaelManaged myRijndael = new RijndaelManaged())
 			{
-				myRijndael.GenerateKey();
-				myRijndael.GenerateIV();
 
-				byte[] key = myRijndael.Key;
-				byte[] IV = myRijndael.IV;
+				byte[] key;
+				byte[] IV;
+				if (encryptArguments.Contains('k'))
+				{
+					Console.WriteLine("Key path:");
+					key = File.ReadAllBytes(Console.ReadLine());
+
+					Console.WriteLine("IV path ('Enter' for none):");
+					IV = File.ReadAllBytes(Console.ReadLine());
+
+					if (IV.Length == 0)
+					{
+						myRijndael.GenerateIV();
+						IV = myRijndael.IV;
+					}
+
+				}
+				else
+				{
+					myRijndael.GenerateKey();
+					myRijndael.GenerateIV();
+
+					key = myRijndael.Key;
+					IV = myRijndael.IV;
+				}
 
 				// Example: encrypt {filePath} {encryptedFilePath} 
 				// Reads from filePath and writes encrypted output to encryptedFilePath.
@@ -135,7 +184,7 @@ namespace Shuller
 					string text = File.ReadAllText(filePath);
 
 					// Encrypt the string to an array of bytes. 
-					byte[] encrypted = Crypher.EncryptStringToBytes(text, myRijndael.Key, myRijndael.IV);
+					byte[] encrypted = Crypher.EncryptStringToBytes(text, key, IV);
 
 					// Create file with the encrypted output.
 					File.WriteAllBytes(encrypredFilePath, encrypted);
@@ -147,7 +196,7 @@ namespace Shuller
 					Console.WriteLine("Text to encrypt: ");
 					string text = Console.ReadLine();
 
-					byte[] encrypted = Crypher.EncryptStringToBytes(text, myRijndael.Key, myRijndael.IV);
+					byte[] encrypted = Crypher.EncryptStringToBytes(text, key, IV);
 
 					Console.WriteLine(Convert.ToBase64String(encrypted));
 				}
