@@ -78,6 +78,12 @@ namespace Shuller
 				" |_____/|_| |_|\\__,_|_|_|\\___|_|\n");
 		}
 
+		private static string EncryptionReadLine()
+		{
+			Console.Write("> ");
+			return Console.ReadLine();
+		}
+
 		private static void Help(string[] arguments)
 		{
 			if (arguments.Length > 0)
@@ -120,11 +126,27 @@ namespace Shuller
 			 */
 			using (RijndaelManaged myRijndael = new RijndaelManaged())
 			{
-				myRijndael.GenerateKey();
-				myRijndael.GenerateIV();
+				Console.WriteLine("Input key path. (Press Enter to autogenerate)");
+				string keyPath = EncryptionReadLine();
+				string IVPath = string.Empty;
 
-				byte[] key = myRijndael.Key;
-				byte[] IV = myRijndael.IV;
+				if (keyPath == String.Empty)
+				{
+					myRijndael.GenerateKey();
+					myRijndael.GenerateIV();
+				}
+				else
+				{
+					myRijndael.Key = File.ReadAllBytes(keyPath);
+
+					Console.WriteLine("Input IV path. (Press Enter to autogenerate)");
+					IVPath = EncryptionReadLine();
+
+					if (IVPath == String.Empty)
+						myRijndael.GenerateIV();
+					else
+						myRijndael.IV = File.ReadAllBytes(IVPath);
+				}
 
 				// Example: encrypt {filePath} {encryptedFilePath} 
 				// Reads from filePath and writes encrypted output to encryptedFilePath.
@@ -145,17 +167,27 @@ namespace Shuller
 				else
 				{
 					Console.WriteLine("Text to encrypt: ");
-					string text = Console.ReadLine();
+					string text = EncryptionReadLine();
 
 					byte[] encrypted = Crypher.EncryptStringToBytes(text, myRijndael.Key, myRijndael.IV);
 
 					Console.WriteLine(Convert.ToBase64String(encrypted));
 				}
 
+				Console.WriteLine("\nEncryption finished.");
+
 				// Send key to separate text file.
-				File.WriteAllBytes("key.txt", key);
-				File.WriteAllBytes("IV.txt", IV);
-				Console.WriteLine("Encryption finished.\nYour key is in 'key.txt'.\nYour IV is in 'IV.txt'.");
+				if (keyPath == String.Empty)
+				{
+					File.WriteAllBytes("key.txt", myRijndael.Key);
+					File.WriteAllBytes("IV.txt", myRijndael.IV);
+					Console.WriteLine("Your key is in 'key.txt'.\nYour IV is in 'IV.txt'.");
+				}
+				else if (IVPath == String.Empty)
+				{
+					File.WriteAllBytes("IV.txt", myRijndael.IV);
+					Console.WriteLine("Your IV is in 'IV.txt'.");
+				}
 			}
 		}
 
@@ -164,9 +196,9 @@ namespace Shuller
 			using (RijndaelManaged myRijndael = new RijndaelManaged())
 			{
 				Console.WriteLine("Key path:");
-				byte[] key = File.ReadAllBytes(Console.ReadLine());
+				byte[] key = File.ReadAllBytes(EncryptionReadLine());
 				Console.WriteLine("IV path ('Enter' for none):");
-				byte[] IV = File.ReadAllBytes(Console.ReadLine());
+				byte[] IV = File.ReadAllBytes(EncryptionReadLine());
 
 				Console.WriteLine("\nDecryption finished.");
 
@@ -231,8 +263,7 @@ namespace Shuller
 			ShowLogo();
 			while (true)
 			{
-				Console.Write("> ");
-				string input = Console.ReadLine();
+				string input = EncryptionReadLine();
 				if (input == "exit")
 					return;
 
