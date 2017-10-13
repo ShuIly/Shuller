@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Shuller
 {
@@ -26,14 +25,29 @@ namespace Shuller
 		private static readonly Dictionary<String, Command> ValidCommands = new Dictionary<string, Command>()
 		{
 			{
+				"help", new Command()
+				{
+					Name = "help",
+					Information = "shows avaiable commands or details about specified command.",
+					MoreInformation =
+						"syntax: help {commands}\n",
+
+					Arguments = new List<char>()
+					{
+					}
+				}
+			},
+
+			{
 				"encrypt", new Command()
 				{
 					Name = "encrypt",
 					Information = "encrypts your text with a string of your choice.",
 					MoreInformation =
-						"\tencrypt {file path} {arguments} {new file path}\n" +
-						"\tNote: the file path should include the name of the file you want to encrypt.\n" +
-						"\tNote: if no new file name is given the encrypted text will only be viewed as output.\n",
+						"syntax: encrypt {file path} {arguments} {new file path}\n" +
+						"Note: the file path should include the name of the file you want to encrypt.\n" +
+						"Note: if no new file name is given the encrypted text will only be viewed as output.\n",
+
 					Arguments = new List<char>()
 					{
 					}
@@ -46,9 +60,10 @@ namespace Shuller
 					Name = "decrypt",
 					Information = "decrypts your text with a string of your choice.",
 					MoreInformation =
-						"\tdecrypt {file path} {arguments} {new file path}\n" +
-						"\tNote: the file path should include the name of the file you want to decrypt.\n" +
-						"\tNote: if no new file name is given the decrypted text will only be viewed as output.\n",
+						"syntax: decrypt {file path} {arguments} {new file path}\n" +
+						"Note: the file path should include the name of the file you want to decrypt.\n" +
+						"Note: if no new file name is given the decrypted text will only be viewed as output.\n",
+
 					Arguments = new List<char>()
 					{
 					}
@@ -84,17 +99,24 @@ namespace Shuller
 			return Console.ReadLine();
 		}
 
+		private static bool CheckCommand(string command)
+		{
+			if (!ValidCommands.ContainsKey(command))
+			{
+				Console.WriteLine($"The command '{command}' doesn't exist. Type 'help' for avaiable commands\n");
+				return false;
+			}
+			return true;
+		}
+
 		private static void Help(string[] arguments)
 		{
 			if (arguments.Length > 0)
 			{
 				foreach (var argument in arguments)
 				{
-					if (!ValidCommands.ContainsKey(argument))
-					{
-						Console.WriteLine($"The command '{argument}' doesn't exist. Type 'help' for avaiable commands");
+					if(!CheckCommand(argument))
 						return;
-					}
 				}
 
 				foreach (var argument in arguments)
@@ -126,7 +148,7 @@ namespace Shuller
 			 */
 			using (RijndaelManaged myRijndael = new RijndaelManaged())
 			{
-				Console.WriteLine("Input key path. (Press Enter to autogenerate)");
+				Console.WriteLine("Input key path. (Press 'Enter' to autogenerate)");
 				string keyPath = EncryptionReadLine();
 				string IVPath = string.Empty;
 
@@ -139,7 +161,7 @@ namespace Shuller
 				{
 					myRijndael.Key = File.ReadAllBytes(keyPath);
 
-					Console.WriteLine("Input IV path. (Press Enter to autogenerate)");
+					Console.WriteLine("Input IV path. (Press 'Enter' to autogenerate)");
 					IVPath = EncryptionReadLine();
 
 					if (IVPath == String.Empty)
@@ -221,11 +243,11 @@ namespace Shuller
 				{
 					string decryptedFilePath = arguments[1];
 					Console.WriteLine($"Decrypted text is in: '{decryptedFilePath}'");
-					File.WriteAllText(decryptedFilePath, string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
+					File.WriteAllText(decryptedFilePath, decrypted);
 				}
 				else
 				{
-					Console.WriteLine("Decrypted text is:\n\n" + string.Join("", decrypted.Select(b => b.ToString()).ToArray()));
+					Console.WriteLine("Decrypted text is:\n\n" + decrypted);
 				}
 			}
 		}
@@ -237,6 +259,9 @@ namespace Shuller
 			string[] arguments = inputTokens.Skip(1).ToArray();
 
 			Console.WriteLine();
+
+			if (!CheckCommand(inputTokens[0]))
+				return;
 
 			switch (command)
 			{
