@@ -4,3 +4,10 @@ D:\Programming\Git-repositories\Shuller\Shuller\bin\Debug\Shuller.pdb
 D:\Programming\Git-repositories\Shuller\Shuller\obj\Debug\Shuller.csprojResolveAssemblyReference.cache
 D:\Programming\Git-repositories\Shuller\Shuller\obj\Debug\Shuller.exe
 D:\Programming\Git-repositories\Shuller\Shuller\obj\Debug\Shuller.pdb
+C:\Programming\Projects\Shuller\Shuller\bin\Debug\Shuller.exe.config
+C:\Programming\Projects\Shuller\Shuller\bin\Debug\Shuller.exe
+C:\Programming\Projects\Shuller\Shuller\bin\Debug\Shuller.pdb
+C:\Programming\Projects\Shuller\Shuller\obj\Debug\Shuller.csprojResolveAssemblyReference.cache
+C:\Programming\Projects\Shuller\Shuller\obj\Debug\Shuller.csproj.CoreCompileInputs.cache
+C:\Programming\Projects\Shuller\Shuller\obj\Debug\Shuller.exe
+C:\Programming\Projects\Shuller\Shuller\obj\Debug\Shuller.pdb
